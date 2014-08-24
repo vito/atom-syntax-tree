@@ -1,0 +1,7 @@
+'.workspace':
+  'ctrl-alt-shift-up': 'syntax-tree:select-up'
+  'ctrl-alt-shift-down': 'syntax-tree:select-down'
+  'ctrl-alt-shift-left': 'syntax-tree:select-left'
+  'ctrl-alt-shift-right': 'syntax-tree:select-right'
+
+  'ctrl-alt-shift-t': 'syntax-tree:print-tree'

@@ -1,0 +1,14 @@
+"context-menu":
+  ".overlayer": {}
+
+"menu": [
+  {
+    "label": "Packages"
+    "submenu": [
+      "label": "syntax-tree"
+      "submenu": [
+        { "label": "Print Tree", "command": "syntax-tree:print-tree" }
+      ]
+    ]
+  }
+]
