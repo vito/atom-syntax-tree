@@ -6,10 +6,10 @@ describe "SyntaxTree", ->
 
   beforeEach ->
     workspaceView = new WorkspaceView
-    editorView = setUpActiveEditorView(workspaceView)
     controller = new Controller(workspaceView)
     controller.start()
 
+    editorView = setUpActiveEditorView(workspaceView)
     editorView.editor.setText(trim("""
       var x = { theKey: "the-value" };
       console.log(x);
@@ -17,6 +17,7 @@ describe "SyntaxTree", ->
 
   describe "when a syntax-tree:select-* event is triggered", ->
     beforeEach ->
+      editorView.editor.setCursorBufferPosition(new Point(0, "var x = { the".length))
       workspaceView.trigger 'syntax-tree:select-up'
 
     it "parses the document", ->
@@ -30,6 +31,9 @@ describe "SyntaxTree", ->
             (member_access (identifier) (identifier))
             (identifier))))
       """))
+
+    it "highlights the syntax node under the cursor", ->
+      expect(editorView.editor.getSelectedText()).toEqual("theKey")
 
     describe "when the document is edited", ->
       beforeEach ->

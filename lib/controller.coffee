@@ -1,6 +1,7 @@
 Document = require("tree-sitter").Document
 jsLanguage = require("tree-sitter-javascript")
 TextBufferInput = require("./text-buffer-input")
+{Range} = require("atom")
 
 module.exports =
 class Controller
@@ -17,6 +18,18 @@ class Controller
 
   selectUp: ->
     @setUpDocument()
+    editor = @currentEditor()
+    buffer = editor.buffer
+    newRanges = for range in editor.getSelectedBufferRanges()
+      node = editor.syntaxTreeDocument.nodeAt(
+        buffer.characterIndexForPosition(range.start),
+        buffer.characterIndexForPosition(range.end)
+      )
+      new Range(
+        buffer.positionForCharacterIndex(node.position),
+        buffer.positionForCharacterIndex(node.position + node.size),
+      )
+    editor.setSelectedBufferRanges(newRanges)
 
   selectDown: ->
     @setUpDocument()

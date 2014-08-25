@@ -8,7 +8,7 @@
     "syntax-tree:select-down",
     "syntax-tree:select-left",
     "syntax-tree:select-right",
-    "syntax-tree:print-tree",
+    "syntax-tree:print-tree"
   ],
   "repository": "https://githu b.com/maxbrunsfeld/atom-syntax-tree",
   "license": "MIT",
