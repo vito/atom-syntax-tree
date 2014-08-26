@@ -15,7 +15,7 @@ describe "SyntaxTree", ->
       console.log(x);
     """))
 
-  describe "when a syntax-tree:select-* event is triggered", ->
+  describe "when a syntax-tree:select-up event is triggered", ->
     beforeEach ->
       editorView.editor.setCursorBufferPosition(new Point(0, "var x = { the".length))
       workspaceView.trigger 'syntax-tree:select-up'
@@ -24,16 +24,23 @@ describe "SyntaxTree", ->
       programNode = editorView.editor.syntaxTreeDocument.children[0]
       expect(programNode.toString()).toEqual(trim("""
         (program
-          (var_declaration
+          (var_declaration (var_assignment
             (identifier)
-            (object (identifier) (string)))
+            (object (pair (identifier) (string)))))
           (expression_statement (function_call
             (member_access (identifier) (identifier))
-            (identifier))))
+            (arguments (identifier)))))
       """))
 
     it "highlights the syntax node under the cursor", ->
       expect(editorView.editor.getSelectedText()).toEqual("theKey")
+
+    describe "when select-up is triggered again", ->
+      beforeEach ->
+        workspaceView.trigger 'syntax-tree:select-up'
+
+      it "highlights the parent of the previously highlighted node", ->
+        expect(editorView.editor.getSelectedText()).toEqual('theKey: "the-value"')
 
     describe "when the document is edited", ->
       beforeEach ->
@@ -46,12 +53,12 @@ describe "SyntaxTree", ->
         programNode = editorView.editor.syntaxTreeDocument.children[0]
         expect(programNode.toString()).toEqual(trim("""
           (program
-            (var_declaration
+            (var_declaration (var_assignment
               (identifier)
-              (object (identifier) (string) (identifier) (string)))
+              (object (pair (identifier) (string)) (pair (identifier) (string)))))
             (expression_statement (function_call
               (member_access (identifier) (identifier))
-              (identifier))))
+              (arguments (identifier)))))
         """))
 
 # Helpers

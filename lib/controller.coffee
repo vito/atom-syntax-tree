@@ -21,14 +21,18 @@ class Controller
     editor = @currentEditor()
     buffer = editor.buffer
     newRanges = for range in editor.getSelectedBufferRanges()
-      node = editor.syntaxTreeDocument.nodeAt(
-        buffer.characterIndexForPosition(range.start),
-        buffer.characterIndexForPosition(range.end)
-      )
+      startIndex = buffer.characterIndexForPosition(range.start)
+      endIndex = buffer.characterIndexForPosition(range.end) - 1
+      node = editor.syntaxTreeDocument.nodeAt(startIndex, endIndex)
+
+      if node.position == startIndex && node.position + node.size >= endIndex
+        node = node.parent() || node
+
       new Range(
         buffer.positionForCharacterIndex(node.position),
         buffer.positionForCharacterIndex(node.position + node.size),
       )
+
     editor.setSelectedBufferRanges(newRanges)
 
   selectDown: ->
