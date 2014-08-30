@@ -36,11 +36,25 @@ describe "SyntaxTree", ->
       expect(editorView.editor.getSelectedText()).toEqual("theKey")
 
     describe "when select-up is triggered again", ->
-      beforeEach ->
-        workspaceView.trigger 'syntax-tree:select-up'
-
       it "highlights the parent of the previously highlighted node", ->
+        workspaceView.trigger 'syntax-tree:select-up'
         expect(editorView.editor.getSelectedText()).toEqual('theKey: "the-value"')
+
+    describe "when select-down is triggered", ->
+      it "highlights the first child of the previously highlighted node", ->
+        workspaceView.trigger 'syntax-tree:select-up'
+        workspaceView.trigger 'syntax-tree:select-down'
+        expect(editorView.editor.getSelectedText()).toEqual('theKey')
+
+    describe "when select-left is triggered", ->
+      it "highlights the left sibling of the previously highlighted node", ->
+        workspaceView.trigger 'syntax-tree:select-left'
+        expect(editorView.editor.getSelectedText()).toEqual("x")
+
+    describe "when select-right is triggered", ->
+      it "highlights the left sibling of the previously highlighted node", ->
+        workspaceView.trigger 'syntax-tree:select-right'
+        expect(editorView.editor.getSelectedText()).toEqual('"the-value"')
 
     describe "when the document is edited", ->
       beforeEach ->

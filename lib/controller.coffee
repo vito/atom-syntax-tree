@@ -17,48 +17,59 @@ class Controller
   stop: ->
 
   selectUp: ->
-    @setUpDocument()
-    editor = @currentEditor()
-    buffer = editor.buffer
-    newRanges = for range in editor.getSelectedBufferRanges()
-      startIndex = buffer.characterIndexForPosition(range.start)
-      endIndex = buffer.characterIndexForPosition(range.end) - 1
-      node = editor.syntaxTreeDocument.nodeAt(startIndex, endIndex)
-
-      if node.position == startIndex && node.position + node.size >= endIndex
-        node = node.parent() || node
-
-      new Range(
-        buffer.positionForCharacterIndex(node.position),
-        buffer.positionForCharacterIndex(node.position + node.size),
-      )
-
-    editor.setSelectedBufferRanges(newRanges)
+    @updatedSelectedNode (node, start, end) ->
+      while (node.position == start) && (node.position + node.size == end) && node.parent()
+        node = node.parent()
+      node
 
   selectDown: ->
-    @setUpDocument()
+    @updatedSelectedNode (node) ->
+      node.children[0]
 
   selectLeft: ->
-    @setUpDocument()
+    @updatedSelectedNode (node) ->
+      while node.parent() and not node.prev()
+        node = node.parent()
+      node.prev()
 
   selectRight: ->
-    @setUpDocument()
+    @updatedSelectedNode (node) ->
+      while node.parent() and not node.next()
+        node = node.parent()
+      node.next()
 
   printTree: ->
     console.log(@currentEditor().syntaxTreeDocument.toString())
 
-  setUpDocument: ->
+  updatedSelectedNode: (fn) ->
     editor = @currentEditor()
-    unless editor.syntaxTreeDocument?
-      editor.syntaxTreeDocument = new Document()
+    buffer = editor.buffer
+    document = @getDocument(editor)
+    newRanges = for range in editor.getSelectedBufferRanges()
+      currentStart = buffer.characterIndexForPosition(range.start)
+      currentEnd = buffer.characterIndexForPosition(range.end)
+      node = document.nodeAt(currentStart, currentEnd - 2)
+      newNode = fn(node, currentStart, currentEnd)
+      if newNode
+        new Range(
+          buffer.positionForCharacterIndex(newNode.position),
+          buffer.positionForCharacterIndex(newNode.position + newNode.size),
+        )
+      else
+        range
+    editor.setSelectedBufferRanges(newRanges)
+
+  getDocument: (editor) ->
+    editor.syntaxTreeDocument ?= do ->
+      document = new Document()
         .setLanguage(jsLanguage)
         .setInput(new TextBufferInput(editor.buffer))
-
       editor.buffer.on 'changed', ({ oldRange, newText, oldText }) ->
-        editor.syntaxTreeDocument.edit
-          position: editor.buffer.characterIndexForPosition(oldRange.start)
-          bytesInserted: newText.length
-          bytesRemoved: oldText.length
+        document.edit
+          position: 0
+          bytesInserted: 0
+          bytesRemoved: 0
+      document
 
   currentEditor: ->
     @workspaceView.getActiveView().editor
