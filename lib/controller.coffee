@@ -28,18 +28,32 @@ class Controller
 
   selectLeft: ->
     @updatedSelectedNode (node) ->
-      while node.parent() and not node.prev()
+      depth = 0
+      while node.parent() and !node.prev()
+        depth++
         node = node.parent()
-      node.prev()
+      node = node.prev()
+      if node
+        while depth > 0 and node.children.length > 0
+          depth--
+          node = node.children[node.children.length - 1]
+      node
 
   selectRight: ->
     @updatedSelectedNode (node) ->
-      while node.parent() and not node.next()
+      depth = 0
+      while node.parent() and !node.next()
+        depth++
         node = node.parent()
-      node.next()
+      node = node.next()
+      if node
+        while depth > 0 and node.children.length > 0
+          depth--
+          node = node.children[0]
+      node
 
   printTree: ->
-    console.log(@currentEditor().syntaxTreeDocument.toString())
+    console.log(@getDocument(@currentEditor()).toString())
 
   updatedSelectedNode: (fn) ->
     editor = @currentEditor()
@@ -58,6 +72,7 @@ class Controller
       else
         range
     editor.setSelectedBufferRanges(newRanges)
+    editor.scrollToScreenRange(editor.screenRangeForBufferRange(newRanges[0]))
 
   getDocument: (editor) ->
     editor.syntaxTreeDocument ?= do ->
@@ -66,9 +81,7 @@ class Controller
         .setInput(new TextBufferInput(editor.buffer))
       editor.buffer.on 'changed', ({ oldRange, newText, oldText }) ->
         document.edit
-          position: 0
-          bytesInserted: 0
-          bytesRemoved: 0
+          position: editor.buffer.characterIndexForPosition(oldRange.start)
       document
 
   currentEditor: ->
