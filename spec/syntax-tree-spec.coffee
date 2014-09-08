@@ -29,7 +29,7 @@ describe "SyntaxTree", ->
             (object (pair (identifier) (string)))))
           (expression_statement (function_call
             (member_access (identifier) (identifier))
-            (arguments (identifier)))))
+            (identifier))))
       """))
 
     it "highlights the syntax node under the cursor", ->
@@ -72,7 +72,7 @@ describe "SyntaxTree", ->
               (object (pair (identifier) (string)) (pair (identifier) (string)))))
             (expression_statement (function_call
               (member_access (identifier) (identifier))
-              (arguments (identifier)))))
+              (identifier))))
         """))
 
 # Helpers
