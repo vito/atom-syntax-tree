@@ -79,7 +79,7 @@ class Controller
       document = new Document()
         .setLanguage(jsLanguage)
         .setInput(new TextBufferInput(editor.buffer))
-      editor.buffer.on 'changed', ({ oldRange, newText, oldText }) ->
+      editor.buffer.onDidChange ({ oldRange, newText, oldText }) ->
         document.edit
           position: editor.buffer.characterIndexForPosition(oldRange.start)
       document
