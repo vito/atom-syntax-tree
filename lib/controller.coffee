@@ -12,7 +12,9 @@ class Controller
     @workspaceView.command "syntax-tree:select-down", => @selectDown()
     @workspaceView.command "syntax-tree:select-left", => @selectLeft()
     @workspaceView.command "syntax-tree:select-right", => @selectRight()
+
     @workspaceView.command "syntax-tree:print-tree", => @printTree()
+    @workspaceView.command "syntax-tree:toggle-debug", => @toggleDebug()
 
   stop: ->
 
@@ -55,6 +57,15 @@ class Controller
   printTree: ->
     console.log(@getDocument(@currentEditor()).toString())
 
+  toggleDebug: ->
+    doc = @getDocument(@currentEditor())
+    doc.setDebug (msg, params, type) ->
+      switch type
+        when 'parse'
+          console.log("* ", msg, params)
+        when 'lex'
+          console.log("  ", msg, params)
+
   updatedSelectedNode: (fn) ->
     editor = @currentEditor()
     buffer = editor.buffer
@@ -79,9 +90,13 @@ class Controller
       document = new Document()
         .setLanguage(jsLanguage)
         .setInput(new TextBufferInput(editor.buffer))
-      editor.buffer.onDidChange ({ oldRange, newText, oldText }) ->
+
+      editor.buffer.onDidChange ({ oldRange, newRange, newText, oldText }) ->
         document.edit
           position: editor.buffer.characterIndexForPosition(oldRange.start)
+          charsInserted: newText.length
+          charsRemoved: oldText.length
+
       document
 
   currentEditor: ->

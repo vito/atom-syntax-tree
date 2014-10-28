@@ -5,3 +5,4 @@
   'ctrl-alt-right': 'syntax-tree:select-right'
 
   'ctrl-alt-t': 'syntax-tree:print-tree'
+  'ctrl-alt-d': 'syntax-tree:toggle-debug'
