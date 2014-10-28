@@ -16,7 +16,7 @@
     "atom": ">0.50.0"
   },
   "dependencies": {
-     "tree-sitter": "*",
-    "tree-sitter-javascript": "*"
+    "tree-sitter": "*",
+    "tree-sitter-golang": "git+https://github.com/vito/node-tree-sitter-golang.git"
   }
 }

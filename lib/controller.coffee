@@ -1,5 +1,5 @@
 Document = require("tree-sitter").Document
-jsLanguage = require("tree-sitter-javascript")
+goLanguage = require("tree-sitter-golang")
 TextBufferInput = require("./text-buffer-input")
 {Range} = require("atom")
 
@@ -88,7 +88,7 @@ class Controller
   getDocument: (editor) ->
     editor.syntaxTreeDocument ?= do ->
       document = new Document()
-        .setLanguage(jsLanguage)
+        .setLanguage(goLanguage)
         .setInput(new TextBufferInput(editor.buffer))
 
       editor.buffer.onDidChange ({ oldRange, newRange, newText, oldText }) ->
